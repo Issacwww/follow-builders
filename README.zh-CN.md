@@ -108,9 +108,38 @@ cd ~/.claude/skills/follow-builders/scripts && npm install
 
 查看 [examples/sample-digest.md](examples/sample-digest.md) 了解输出示例。
 
+## 通过 GitHub Actions 部署
+
+如果你不想一直开着本地 agent，可以使用 GitHub Actions 在云端自动生成并推送摘要。
+
+### 设置步骤
+
+1. **Fork** 本仓库
+2. 进入 **Settings → Secrets and variables → Actions**
+3. 在 **Variables** 标签页中，创建 `DIGEST_FEATURE_FLAG` 并设置为 `true`
+4. 在 **Secrets** 标签页中，添加至少一个 LLM API key 和你的推送凭证（见下表）
+5. 进入 **Actions** 标签页，为你的 fork 启用工作流
+6. （可选）通过 **Actions → Daily Digest → Run workflow** 手动触发测试
+
+### Secrets 与 Variables 参考
+
+| 名称 | 类型 | 必需 | 说明 |
+|------|------|------|------|
+| `DIGEST_FEATURE_FLAG` | Variable | 是 | 设为 `true` 以启用摘要工作流 |
+| `ANTHROPIC_API_KEY` | Secret | 至少一个 | Anthropic Claude API key（两者都设置时优先使用） |
+| `OPENAI_API_KEY` | Secret | 至少一个 | OpenAI API key（Anthropic key 未设置时使用） |
+| `TELEGRAM_BOT_TOKEN` | Secret | Telegram 推送时 | 从 @BotFather 获取的 Bot token |
+| `TELEGRAM_CHAT_ID` | Secret | Telegram 推送时 | 目标聊天或群组 ID |
+| `RESEND_API_KEY` | Secret | 邮件推送时 | Resend.com API key |
+| `DIGEST_EMAIL` | Secret | 邮件推送时 | 目标邮箱地址 |
+| `DIGEST_LANGUAGE` | Variable | 否 | `en`（默认）、`zh` 或 `bilingual` |
+| `DELIVERY_METHOD` | Variable | 否 | `telegram`（默认）、`email` 或 `stdout` |
+| `LLM_MODEL` | Variable | 否 | 覆盖默认 LLM 模型名称 |
+
 ## 隐私
 
-- 不发送任何 API key——所有内容由中心化服务获取
+- 获取内容不需要任何 API key——所有内容由中心化服务获取
+- 如果你使用 GitHub Actions 部署方式，LLM 和推送相关的 API key 安全存储在 GitHub Secrets 中
 - 如果你使用 Telegram/邮件推送，相关 key 仅存储在本地 `~/.follow-builders/.env`
 - Skill 只读取公开内容（公开的博客文章、YouTube 视频和 X 帖子）
 - 你的配置、偏好和阅读记录都保留在你自己的设备上

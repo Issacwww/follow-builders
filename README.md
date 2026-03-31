@@ -117,9 +117,38 @@ is fetched centrally and updated daily.
 
 See [examples/sample-digest.md](examples/sample-digest.md) for what the output looks like.
 
+## Deploy via GitHub Actions
+
+If you don't want to keep a local agent running, you can use GitHub Actions to automatically generate and deliver your digest in the cloud.
+
+### Setup
+
+1. **Fork** this repository
+2. Go to **Settings → Secrets and variables → Actions**
+3. Under the **Variables** tab, create `DIGEST_FEATURE_FLAG` and set it to `true`
+4. Under the **Secrets** tab, add at least one LLM API key and your delivery secrets (see table below)
+5. Go to the **Actions** tab and enable workflows for your fork
+6. (Optional) Trigger manually via **Actions → Daily Digest → Run workflow** to test
+
+### Secrets & Variables Reference
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `DIGEST_FEATURE_FLAG` | Variable | Yes | Set to `true` to enable the digest workflow |
+| `ANTHROPIC_API_KEY` | Secret | At least one | Anthropic Claude API key (used by default if both are set) |
+| `OPENAI_API_KEY` | Secret | At least one | OpenAI API key (fallback if Anthropic key is not set) |
+| `TELEGRAM_BOT_TOKEN` | Secret | For Telegram | Bot token from @BotFather |
+| `TELEGRAM_CHAT_ID` | Secret | For Telegram | Target chat or group ID |
+| `RESEND_API_KEY` | Secret | For Email | Resend.com API key |
+| `DIGEST_EMAIL` | Secret | For Email | Destination email address |
+| `DIGEST_LANGUAGE` | Variable | No | `en` (default), `zh`, or `bilingual` |
+| `DELIVERY_METHOD` | Variable | No | `telegram` (default), `email`, or `stdout` |
+| `LLM_MODEL` | Variable | No | Override the default LLM model name |
+
 ## Privacy
 
-- No API keys are sent anywhere — all content is fetched centrally
+- No API keys are needed for content fetching — all content is fetched centrally
+- If you use the GitHub Actions deployment, your LLM and delivery API keys are stored securely in GitHub Secrets
 - If you use Telegram/email delivery, those keys are stored locally in `~/.follow-builders/.env`
 - The skill only reads public content (public blog posts, public YouTube videos, public X posts)
 - Your configuration, preferences, and reading history stay on your machine
